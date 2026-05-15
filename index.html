@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ninja Nightfall</title>
+  </head>
+  <body>
+    <div id="app">
+      <main id="game-root" class="game-root" data-phase="loading">
+        <div id="game-viewport" class="game-viewport"></div>
+        <canvas id="screen-cracks" class="screen-cracks" aria-hidden="true"></canvas>
+
+        <section id="main-menu" class="main-menu" aria-live="polite" data-testid="main-menu">
+          <div class="main-menu__panel">
+            <p class="main-menu__eyebrow">Pixel survival</p>
+            <h1>Ninja Nightfall</h1>
+            <div class="main-menu__audio" aria-label="Music controls">
+              <button
+                id="menu-music-toggle"
+                class="menu-audio-toggle"
+                type="button"
+                aria-pressed="true"
+                data-testid="menu-music-toggle"
+              >
+                Music On
+              </button>
+              <label class="menu-volume">
+                <span>Volume</span>
+                <input
+                  id="menu-music-volume"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="45"
+                  step="1"
+                  data-testid="menu-music-volume"
+                />
+                <strong id="menu-music-volume-value" data-testid="menu-music-volume-value">45%</strong>
+              </label>
+            </div>
+            <div class="main-menu__actions">
+              <button id="start-run-button" type="button" data-testid="start-run-button">Start Run</button>
+              <button id="menu-help-button" class="button-secondary" type="button" data-testid="menu-help-button">
+                Help
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="hud" aria-label="Run status">
+          <div class="hud__cluster hud__cluster--left">
+            <div class="hud__stat">
+              <span>Wave</span>
+              <strong id="wave-value" data-testid="wave-value">1</strong>
+            </div>
+            <div class="hud__stat">
+              <span>Kills</span>
+              <strong id="kills-value" data-testid="kills-value">0</strong>
+            </div>
+          </div>
+
+          <div class="hud__cluster hud__cluster--center">
+            <div class="health" aria-label="Health">
+              <span>Health</span>
+              <div class="health__rail">
+                <i id="health-fill"></i>
+              </div>
+              <strong id="health-value" data-testid="health-value">100</strong>
+            </div>
+            <div class="ultimate" id="ultimate-status" data-testid="ultimate-status">Ultimate Ready</div>
+          </div>
+
+          <div class="hud__cluster hud__cluster--right">
+            <button id="help-button" class="icon-button" type="button" data-testid="help-button">Help</button>
+            <button id="music-toggle" class="icon-button" type="button" aria-pressed="true" data-testid="music-toggle">
+              Music On
+            </button>
+          </div>
+        </section>
+
+        <div id="wave-banner" class="wave-banner" data-testid="wave-banner">Nightfall begins</div>
+
+        <section id="help-menu" class="help-menu" aria-live="polite" hidden data-testid="help-menu">
+          <div class="help-menu__panel">
+            <p class="help-menu__eyebrow">Paused</p>
+            <h2>Keyboard Shortcuts</h2>
+            <dl class="shortcut-grid">
+              <div>
+                <dt>WASD</dt>
+                <dd>Move</dd>
+              </div>
+              <div>
+                <dt>Space</dt>
+                <dd>Sword combo</dd>
+              </div>
+              <div>
+                <dt>R</dt>
+                <dd>Ultimate</dd>
+              </div>
+              <div>
+                <dt>H / P</dt>
+                <dd>Help and pause</dd>
+              </div>
+              <div>
+                <dt>Esc</dt>
+                <dd>Resume</dd>
+              </div>
+              <div>
+                <dt>Enter</dt>
+                <dd>Start or resume</dd>
+              </div>
+            </dl>
+            <button id="close-help-button" type="button" data-testid="close-help-button">Resume</button>
+          </div>
+        </section>
+
+        <section id="death-screen" class="death-screen" aria-live="polite" hidden data-testid="death-screen">
+          <div class="death-screen__panel">
+            <p class="death-screen__eyebrow">Run ended</p>
+            <h1>Overrun at the Shrine</h1>
+            <p id="death-kills" data-testid="death-kills">0 zombies defeated</p>
+            <button id="restart-button" type="button" data-testid="restart-button">Restart Run</button>
+          </div>
+        </section>
+
+        <nav id="touch-controls" class="touch-controls" aria-label="Touch controls" data-testid="touch-controls">
+          <div class="touch-dpad" aria-label="Move">
+            <button
+              class="touch-button touch-button--up"
+              type="button"
+              data-touch-code="KeyW"
+              aria-label="Move up"
+              data-testid="touch-up"
+            >
+              ↑
+            </button>
+            <button
+              class="touch-button touch-button--left"
+              type="button"
+              data-touch-code="KeyA"
+              aria-label="Move left"
+              data-testid="touch-left"
+            >
+              ←
+            </button>
+            <button
+              class="touch-button touch-button--down"
+              type="button"
+              data-touch-code="KeyS"
+              aria-label="Move down"
+              data-testid="touch-down"
+            >
+              ↓
+            </button>
+            <button
+              class="touch-button touch-button--right"
+              type="button"
+              data-touch-code="KeyD"
+              aria-label="Move right"
+              data-testid="touch-right"
+            >
+              →
+            </button>
+          </div>
+          <div class="touch-actions" aria-label="Actions">
+            <button
+              class="touch-button touch-action touch-action--attack"
+              type="button"
+              data-touch-code="Space"
+              data-testid="touch-attack"
+            >
+              Attack
+            </button>
+            <button
+              class="touch-button touch-action"
+              type="button"
+              data-touch-code="KeyR"
+              data-testid="touch-ultimate"
+            >
+              Ult
+            </button>
+            <button
+              class="touch-button touch-action"
+              type="button"
+              data-touch-code="KeyH"
+              data-testid="touch-help"
+            >
+              Help
+            </button>
+          </div>
+        </nav>
+
+        <div id="debug-state" class="debug-state" data-testid="debug-state" aria-hidden="true"></div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
