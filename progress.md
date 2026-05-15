@@ -201,3 +201,17 @@ Original prompt: Build and iteratively fix a playable Three.js top-down pixel-ar
   - Integrated Browser iPad viewport check at 1024x768 confirmed music was loaded and playing with the audio context running after interaction.
   - Rapid attack tapping kept `visualViewport.scale` at `1`, confirming the page did not zoom.
   - The web-game smoke client passed against `http://127.0.0.1:5174/`.
+
+## Current Turn - iPad Visible-Area Layout Fix
+
+- Adjusted the app shell to use dynamic viewport height where supported so iPad Safari lays the game out against the visible area instead of the larger layout viewport.
+- Reduced tablet touch-control and HUD sizing:
+  - joystick max size lowered from 170px to 150px
+  - attack and ultimate buttons lowered to 96px and 82px max
+  - top HUD buttons and stats are more compact on coarse/tablet viewports
+- Added safe-area-aware tablet HUD insets so the top-right Help/Music buttons keep breathing room from the edge.
+- Browser validation at 1024x768 confirmed:
+  - joystick bounds are fully visible
+  - attack and ultimate buttons are fully visible
+  - top-right HUD buttons are fully visible
+  - `visualViewport.scale` remains `1`
