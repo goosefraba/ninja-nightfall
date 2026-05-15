@@ -24,7 +24,7 @@ The development server runs on `http://127.0.0.1:5173/` by default. Use `npm run
 - `R` triggers the ultimate attack when it is ready.
 - `H` or `P` opens the pause-backed help overlay.
 - `Esc` resumes from help.
-- Mobile viewports get touch movement and action controls after the first-run help overlay is dismissed.
+- Mobile viewports get a left joystick plus round attack and ultimate buttons after the first-run help overlay is dismissed.
 
 ## Assets
 

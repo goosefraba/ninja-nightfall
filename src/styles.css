@@ -512,37 +512,110 @@ button {
   display: none;
 }
 
-.touch-button {
-  width: 62px;
-  height: 62px;
-  padding: 0;
-  color: #effaff;
-  border: 1px solid rgba(178, 224, 255, 0.34);
-  background: rgba(7, 13, 23, 0.72);
+.touch-joystick {
+  --stick-x: 0px;
+  --stick-y: 0px;
+  position: relative;
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.touch-joystick__base,
+.touch-joystick__ring,
+.touch-joystick__stick {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.touch-joystick__base {
+  inset: 0;
+  border: 1px solid rgba(178, 224, 255, 0.26);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(152, 222, 255, 0.16) 0 24%, transparent 25%),
+    rgba(7, 13, 23, 0.36);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 14px 28px rgba(0, 0, 0, 0.34);
-  font-size: 24px;
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 18px 42px rgba(0, 0, 0, 0.36),
+    0 0 24px rgba(102, 205, 255, 0.12);
+  backdrop-filter: blur(7px);
+}
+
+.touch-joystick__ring {
+  inset: 28%;
+  border: 1px solid rgba(222, 246, 255, 0.2);
+  box-shadow: 0 0 18px rgba(115, 218, 255, 0.13);
+}
+
+.touch-joystick__stick {
+  left: 50%;
+  top: 50%;
+  width: 72px;
+  height: 72px;
+  border: 1px solid rgba(246, 252, 255, 0.68);
+  background:
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.92), rgba(157, 219, 255, 0.88) 40%, rgba(58, 132, 188, 0.78)),
+    #9bd8ff;
+  box-shadow:
+    0 7px 22px rgba(0, 0, 0, 0.42),
+    0 0 22px rgba(146, 225, 255, 0.38);
+  transform: translate(-50%, -50%) translate(var(--stick-x), var(--stick-y));
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.touch-joystick[data-active="true"] .touch-joystick__stick {
+  filter: brightness(1.12);
+  transition: none;
+}
+
+.touch-button {
+  width: 86px;
+  height: 86px;
+  padding: 0;
+  color: #061018;
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #f8fdff, #94d6ff 58%, #50a9e6);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.24) inset,
+    0 15px 30px rgba(0, 0, 0, 0.38),
+    0 0 22px rgba(96, 196, 255, 0.22);
+  font-size: 14px;
   font-weight: 900;
+  letter-spacing: 0;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
 
 .touch-button:active {
-  color: #071018;
-  background: linear-gradient(180deg, #f4fbff, #9bd8ff);
+  filter: brightness(1.14);
+  transform: translateY(1px) scale(0.98);
 }
 
 .touch-action {
-  width: 78px;
-  height: 58px;
-  font-size: 13px;
+  display: grid;
+  place-items: center;
 }
 
 .touch-action--attack {
-  width: 86px;
-  height: 86px;
+  width: 98px;
+  height: 98px;
+}
+
+.touch-action--ultimate {
+  width: 82px;
+  height: 82px;
+  color: #fff8ec;
+  border-color: rgba(255, 228, 177, 0.62);
+  background: linear-gradient(180deg, #ffe9b6, #ff9d52 58%, #d9543e);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+    0 15px 30px rgba(0, 0, 0, 0.4),
+    0 0 24px rgba(255, 120, 72, 0.24);
 }
 
 .debug-state {
@@ -605,12 +678,12 @@ button {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
+@media (hover: none) and (pointer: coarse), (max-width: 1180px) and (max-height: 920px) {
   .touch-controls {
-    --touch-pad: clamp(50px, 14vw, 62px);
-    --touch-action-large: clamp(70px, 20vw, 86px);
-    --touch-action-small: clamp(58px, 17vw, 78px);
-    --touch-action-row: clamp(48px, 13vw, 58px);
+    --joystick-size: clamp(132px, 22vw, 170px);
+    --joystick-stick: clamp(62px, 9vw, 76px);
+    --touch-attack: clamp(88px, 13vw, 108px);
+    --touch-ultimate: clamp(74px, 11vw, 92px);
     --touch-gap: clamp(8px, 4vw, 18px);
     position: absolute;
     z-index: 7;
@@ -632,59 +705,39 @@ button {
     display: none;
   }
 
-  .touch-controls button {
-    width: var(--touch-pad);
-    height: var(--touch-pad);
+  .touch-joystick {
+    width: var(--joystick-size);
+    height: var(--joystick-size);
     pointer-events: auto;
   }
 
-  .touch-dpad {
-    display: grid;
-    grid-template-columns: repeat(3, var(--touch-pad));
-    grid-template-rows: repeat(3, var(--touch-pad));
-    gap: clamp(5px, 1.5vw, 7px);
-  }
-
-  .touch-button--up {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .touch-button--left {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .touch-button--down {
-    grid-column: 2;
-    grid-row: 3;
-  }
-
-  .touch-button--right {
-    grid-column: 3;
-    grid-row: 2;
+  .touch-joystick__stick {
+    width: var(--joystick-stick);
+    height: var(--joystick-stick);
   }
 
   .touch-actions {
-    display: grid;
-    grid-template-columns: var(--touch-action-large) var(--touch-action-small);
-    grid-template-rows: var(--touch-action-row) var(--touch-action-row);
+    display: flex;
     align-items: end;
-    gap: 10px;
+    gap: clamp(12px, 2vw, 18px);
   }
 
   .touch-action {
-    width: var(--touch-action-small);
-    height: var(--touch-action-row);
+    pointer-events: auto;
   }
 
   .touch-action--attack {
-    width: var(--touch-action-large);
-    height: var(--touch-action-large);
-    grid-row: 1 / span 2;
+    width: var(--touch-attack);
+    height: var(--touch-attack);
+  }
+
+  .touch-action--ultimate {
+    width: var(--touch-ultimate);
+    height: var(--touch-ultimate);
+    margin-bottom: clamp(24px, 4vw, 34px);
   }
 
   .wave-banner {
-    bottom: calc(142px + env(safe-area-inset-bottom));
+    bottom: calc(var(--joystick-size) + 26px + env(safe-area-inset-bottom));
   }
 }

@@ -283,12 +283,15 @@ export class NinjaNightfallGame {
     }
 
     const state = this.player.state;
-    const inputVector = vec2(
+    const keyboardVector = vec2(
       (this.input.isDown('KeyD') ? 1 : 0) - (this.input.isDown('KeyA') ? 1 : 0),
       (this.input.isDown('KeyS') ? 1 : 0) - (this.input.isDown('KeyW') ? 1 : 0),
     );
+    const joystickVector = this.input.getMovementVector();
+    const inputVector = vec2(keyboardVector.x + joystickVector.x, keyboardVector.y + joystickVector.y);
+    const inputStrength = clamp(length(inputVector), 0, 1);
     const direction = normalize(inputVector);
-    state.velocity = multiply(direction, PLAYER_SPEED);
+    state.velocity = multiply(direction, PLAYER_SPEED * inputStrength);
     state.position = clampToArena(
       add(state.position, multiply(state.velocity, dt)),
       HALF_WIDTH,
@@ -296,7 +299,7 @@ export class NinjaNightfallGame {
       PLAYER_RADIUS,
     );
 
-    if (length(direction) > 0.01) {
+    if (inputStrength > 0.01) {
       state.facing = angleFromVec(direction);
     }
 
@@ -688,6 +691,7 @@ export class NinjaNightfallGame {
       playerX: this.player.state.position.x,
       playerY: this.player.state.position.y,
       combo: this.player.state.comboIndex,
+      attacking: this.player.state.attackTimer > 0,
       musicVolume: this.audio.musicVolume,
       helpOpen: this.helpOpen,
       paused: this.isPaused(),
@@ -704,6 +708,7 @@ export class NinjaNightfallGame {
         playerX: Number((this.player?.state.position.x ?? 0).toFixed(2)),
         playerY: Number((this.player?.state.position.y ?? 0).toFixed(2)),
         combo: this.player?.state.comboIndex ?? 0,
+        attacking: (this.player?.state.attackTimer ?? 0) > 0,
         musicEnabled: this.audio.enabled,
         musicVolume: Number(this.audio.musicVolume.toFixed(2)),
         helpOpen: this.helpOpen,

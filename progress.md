@@ -153,3 +153,28 @@ Original prompt: Build and iteratively fix a playable Three.js top-down pixel-ar
 ## Blocker
 
 - None currently.
+
+## Current Turn - iPad Joystick Controls
+
+- Replaced the mobile four-button D-pad with a left analog joystick control:
+  - `index.html` now renders `#touch-joystick` with a movable stick element.
+  - `InputController` tracks a touch joystick vector, directional key compatibility, dead zone, clamped stick travel, and source-aware key/button presses.
+  - player movement now uses keyboard plus joystick vectors with analog strength.
+- Replaced the right-side touch actions with two round buttons:
+  - `ATK` maps to `Space`
+  - `ULT` maps to `KeyR`
+- Expanded the touch-control media query so the iPad-sized Browser viewport can show and validate the tablet layout.
+- Added hidden debug-state `attacking` so Browser validation can prove the transient attack button state.
+- Validation completed:
+  - `npm run typecheck` passes.
+  - `npm run build` passes; Vite still reports the existing single-bundle size warning.
+  - `git diff --check` passes.
+  - Web-game client run against `http://127.0.0.1:5174/` produced screenshots in `output/web-game-joystick-client/` with no console error artifacts.
+  - Integrated Browser iPad viewport check at 1024x768:
+    - touch controls displayed as `flex`
+    - joystick rendered at 170px with the stick visible
+    - attack and ultimate buttons both reported `border-radius: 50%`
+    - joystick drag moved `playerX` from `0` to `0.59`
+    - attack tap produced `attacking=true`
+    - ultimate tap set cooldown to about `14.99s`
+  - Captured Browser screenshot: `output/browser-ipad-controls.png`.

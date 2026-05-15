@@ -13,6 +13,7 @@ type HudUpdate = {
   playerX: number;
   playerY: number;
   combo: number;
+  attacking: boolean;
   musicVolume: number;
   helpOpen: boolean;
   paused: boolean;
@@ -116,6 +117,7 @@ export class Hud {
       playerX: Number(data.playerX.toFixed(2)),
       playerY: Number(data.playerY.toFixed(2)),
       combo: data.combo,
+      attacking: data.attacking,
       musicEnabled: data.musicEnabled,
       musicVolume: Number(data.musicVolume.toFixed(2)),
       helpOpen: data.helpOpen,

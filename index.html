@@ -125,68 +125,42 @@
         </section>
 
         <nav id="touch-controls" class="touch-controls" aria-label="Touch controls" data-testid="touch-controls">
-          <div class="touch-dpad" aria-label="Move">
-            <button
-              class="touch-button touch-button--up"
-              type="button"
-              data-touch-code="KeyW"
-              aria-label="Move up"
-              data-testid="touch-up"
-            >
-              ↑
-            </button>
-            <button
-              class="touch-button touch-button--left"
-              type="button"
-              data-touch-code="KeyA"
-              aria-label="Move left"
-              data-testid="touch-left"
-            >
-              ←
-            </button>
-            <button
-              class="touch-button touch-button--down"
-              type="button"
-              data-touch-code="KeyS"
-              aria-label="Move down"
-              data-testid="touch-down"
-            >
-              ↓
-            </button>
-            <button
-              class="touch-button touch-button--right"
-              type="button"
-              data-touch-code="KeyD"
-              aria-label="Move right"
-              data-testid="touch-right"
-            >
-              →
-            </button>
+          <div
+            id="touch-joystick"
+            class="touch-joystick"
+            role="group"
+            aria-label="Move"
+            data-touch-joystick
+            data-testid="touch-joystick"
+          >
+            <div class="touch-joystick__base" aria-hidden="true">
+              <div class="touch-joystick__ring"></div>
+              <div
+                id="touch-joystick-stick"
+                class="touch-joystick__stick"
+                data-touch-joystick-stick
+                aria-hidden="true"
+              ></div>
+            </div>
           </div>
           <div class="touch-actions" aria-label="Actions">
             <button
               class="touch-button touch-action touch-action--attack"
               type="button"
               data-touch-code="Space"
+              aria-label="Attack"
               data-testid="touch-attack"
             >
-              Attack
+              ATK
             </button>
             <button
-              class="touch-button touch-action"
+              class="touch-button touch-action touch-action--ultimate"
               type="button"
               data-touch-code="KeyR"
+              aria-label="Ultimate"
               data-testid="touch-ultimate"
             >
-              Ult
-            </button>
-            <button
-              class="touch-button touch-action"
-              type="button"
-              data-touch-code="KeyH"
-              data-testid="touch-help"
-            >
-              Help
+              ULT
             </button>
           </div>
         </nav>
