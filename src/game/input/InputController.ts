@@ -33,23 +33,26 @@ export class InputController {
   private readonly activeTouchPointers = new Map<number, TouchPointerBinding>();
   private readonly joystick = document.querySelector<HTMLElement>('[data-touch-joystick]');
   private readonly joystickStick = document.querySelector<HTMLElement>('[data-touch-joystick-stick]');
+  private readonly touchSurface = document.getElementById('touch-controls');
   private readonly joystickCodes = new Set<string>();
   private activeJoystickPointer: number | undefined;
   private joystickVector: MovementVector = { x: 0, y: 0 };
-  private hasInteracted = false;
 
   constructor(private readonly onFirstInteraction: () => void) {
     window.addEventListener('keydown', this.handleKeyDown, { passive: false });
     window.addEventListener('keyup', this.handleKeyUp, { passive: false });
     window.addEventListener('pointerdown', this.handlePointerDown, { passive: true });
+    window.addEventListener('gesturestart', this.preventBrowserGesture, { passive: false });
     this.bindTouchControls();
     this.bindJoystickControl();
+    this.bindTouchSurface();
   }
 
   destroy(): void {
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
     window.removeEventListener('pointerdown', this.handlePointerDown);
+    window.removeEventListener('gesturestart', this.preventBrowserGesture);
     this.touchButtons.forEach((button) => {
       button.removeEventListener('pointerdown', this.handleTouchControlDown);
       button.removeEventListener('pointerup', this.handleTouchControlUp);
@@ -61,6 +64,8 @@ export class InputController {
     this.joystick?.removeEventListener('pointerup', this.handleJoystickUp);
     this.joystick?.removeEventListener('pointercancel', this.handleJoystickUp);
     this.joystick?.removeEventListener('lostpointercapture', this.handleJoystickUp);
+    this.touchSurface?.removeEventListener('dblclick', this.preventBrowserGesture);
+    this.touchSurface?.removeEventListener('touchend', this.preventBrowserGesture);
   }
 
   isDown(code: string): boolean {
@@ -85,15 +90,15 @@ export class InputController {
   }
 
   private markInteracted(): void {
-    if (this.hasInteracted) {
-      return;
-    }
-    this.hasInteracted = true;
     this.onFirstInteraction();
   }
 
   private readonly handlePointerDown = (): void => {
     this.markInteracted();
+  };
+
+  private readonly preventBrowserGesture = (event: Event): void => {
+    event.preventDefault();
   };
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
@@ -131,6 +136,11 @@ export class InputController {
     this.joystick.addEventListener('pointerup', this.handleJoystickUp, { passive: false });
     this.joystick.addEventListener('pointercancel', this.handleJoystickUp, { passive: false });
     this.joystick.addEventListener('lostpointercapture', this.handleJoystickUp, { passive: false });
+  }
+
+  private bindTouchSurface(): void {
+    this.touchSurface?.addEventListener('dblclick', this.preventBrowserGesture, { passive: false });
+    this.touchSurface?.addEventListener('touchend', this.preventBrowserGesture, { passive: false });
   }
 
   private readonly handleTouchControlDown = (event: PointerEvent): void => {

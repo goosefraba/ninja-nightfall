@@ -15,6 +15,9 @@ type HudUpdate = {
   combo: number;
   attacking: boolean;
   musicVolume: number;
+  audioContextState: string;
+  musicLoaded: boolean;
+  musicPlaying: boolean;
   helpOpen: boolean;
   paused: boolean;
 };
@@ -120,6 +123,9 @@ export class Hud {
       attacking: data.attacking,
       musicEnabled: data.musicEnabled,
       musicVolume: Number(data.musicVolume.toFixed(2)),
+      audioContextState: data.audioContextState,
+      musicLoaded: data.musicLoaded,
+      musicPlaying: data.musicPlaying,
       helpOpen: data.helpOpen,
       paused: data.paused,
     });

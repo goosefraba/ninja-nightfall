@@ -178,3 +178,26 @@ Original prompt: Build and iteratively fix a playable Three.js top-down pixel-ar
     - attack tap produced `attacking=true`
     - ultimate tap set cooldown to about `14.99s`
   - Captured Browser screenshot: `output/browser-ipad-controls.png`.
+
+## Current Turn - iPad Audio And Zoom Fixes
+
+- Improved iPad/Safari audio startup:
+  - audio unlock now retries on each real interaction instead of only the first gesture
+  - WebAudio output is primed after resume to make iOS audio start more reliably
+  - audio assets are loaded in browser-supported format order so Safari can prefer MP3 before unsupported formats
+  - music volume is slightly louder while preserving the existing menu volume controls
+- Added hidden audio debug state for Browser validation:
+  - audio context state
+  - music loaded state
+  - music playing state
+- Prevented fast attack taps from zooming the page:
+  - locked the mobile viewport scale
+  - disabled browser touch gestures on the game surface and touch controls
+  - guarded touch end, double-click, and Safari gesture events around the touch controls
+- Validation completed:
+  - `npm run typecheck` passes.
+  - `npm run build` passes; Vite still reports the existing single-bundle size warning.
+  - `git diff --check` passes.
+  - Integrated Browser iPad viewport check at 1024x768 confirmed music was loaded and playing with the audio context running after interaction.
+  - Rapid attack tapping kept `visualViewport.scale` at `1`, confirming the page did not zoom.
+  - The web-game smoke client passed against `http://127.0.0.1:5174/`.

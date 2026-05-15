@@ -16,7 +16,7 @@ const SFX_SOURCES = {
 } as const;
 
 const MUSIC_URLS = ['/assets/music/asianoriental1.ogg', '/assets/music/asianoriental1.mp3'] as const;
-const MUSIC_GAIN_MULTIPLIER = 0.2;
+const MUSIC_GAIN_MULTIPLIER = 0.32;
 
 type SfxName = keyof typeof SFX_SOURCES;
 
@@ -39,6 +39,7 @@ export class AudioSystem {
   private readonly sfxBuffers = new Map<SfxName, AudioBuffer[]>();
   private readonly sfxLoads = new Map<SfxName, Promise<void>>();
   private lastZombieHitSfxTime = -Infinity;
+  private hasPrimedOutput = false;
 
   get enabled(): boolean {
     return this.musicEnabled;
@@ -46,6 +47,18 @@ export class AudioSystem {
 
   get musicVolume(): number {
     return this.musicVolumeValue;
+  }
+
+  get contextState(): string {
+    return this.context?.state ?? 'unavailable';
+  }
+
+  get musicPlaying(): boolean {
+    return Boolean(this.musicSource);
+  }
+
+  get musicLoaded(): boolean {
+    return Boolean(this.musicBuffer);
   }
 
   unlock(): void {
@@ -56,6 +69,8 @@ export class AudioSystem {
           this.startMusic();
         }
       });
+    }).catch((error: unknown) => {
+      console.warn('Failed to unlock audio.', error);
     });
   }
 
@@ -149,9 +164,7 @@ export class AudioSystem {
 
   private async ensureContext(): Promise<AudioContext | undefined> {
     if (this.context) {
-      if (this.context.state === 'suspended') {
-        await this.context.resume();
-      }
+      await this.resumeContext();
       return this.context;
     }
 
@@ -165,10 +178,38 @@ export class AudioSystem {
     this.master.gain.value = 0.55;
     this.master.connect(this.context.destination);
     this.unlocked = true;
-    if (this.context.state === 'suspended') {
-      await this.context.resume();
-    }
+    this.primeOutput();
+    await this.resumeContext();
     return this.context;
+  }
+
+  private async resumeContext(): Promise<void> {
+    if (!this.context || this.context.state !== 'suspended') {
+      return;
+    }
+
+    try {
+      await this.context.resume();
+      this.unlocked = true;
+    } catch (error: unknown) {
+      console.warn('Failed to resume audio context.', error);
+    }
+  }
+
+  private primeOutput(): void {
+    if (!this.context || !this.master || this.hasPrimedOutput) {
+      return;
+    }
+
+    this.hasPrimedOutput = true;
+    const source = this.context.createBufferSource();
+    const gain = this.context.createGain();
+    source.buffer = this.context.createBuffer(1, 1, 22050);
+    gain.gain.value = 0.0001;
+    source.connect(gain);
+    gain.connect(this.master);
+    source.start(0);
+    source.stop(this.context.currentTime + 0.01);
   }
 
   private async preloadSfx(): Promise<void> {
@@ -229,7 +270,7 @@ export class AudioSystem {
     }
 
     let lastError: unknown;
-    for (const url of urls) {
+    for (const url of this.preferredAudioUrls(urls)) {
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -243,6 +284,19 @@ export class AudioSystem {
     }
 
     throw lastError instanceof Error ? lastError : new Error('No supported audio source loaded.');
+  }
+
+  private preferredAudioUrls(urls: readonly string[]): readonly string[] {
+    const audio = document.createElement('audio');
+    const scoredUrls = urls.map((url, index) => {
+      const support = audio.canPlayType(mimeTypeForAudioUrl(url));
+      const score = support === 'probably' ? 2 : support === 'maybe' ? 1 : 0;
+      return { index, score, url };
+    });
+
+    return scoredUrls
+      .sort((a, b) => b.score - a.score || a.index - b.index)
+      .map(({ url }) => url);
   }
 
   private playBufferedSfx(
@@ -259,6 +313,7 @@ export class AudioSystem {
       return false;
     }
 
+    void this.resumeContext();
     const source = this.context.createBufferSource();
     const gain = this.context.createGain();
     const buffer = buffers[Math.floor(Math.random() * buffers.length)];
@@ -282,6 +337,7 @@ export class AudioSystem {
       return;
     }
 
+    void this.resumeContext();
     const musicGain = this.context.createGain();
     musicGain.gain.value = this.musicGainValue();
     musicGain.connect(this.master);
@@ -330,6 +386,7 @@ export class AudioSystem {
       return;
     }
 
+    void this.resumeContext();
     const oscillator = this.context.createOscillator();
     const gain = this.context.createGain();
     const now = this.context.currentTime;
@@ -347,4 +404,14 @@ export class AudioSystem {
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
+}
+
+function mimeTypeForAudioUrl(url: string): string {
+  if (url.endsWith('.mp3')) {
+    return 'audio/mpeg';
+  }
+  if (url.endsWith('.ogg')) {
+    return 'audio/ogg; codecs="vorbis"';
+  }
+  return '';
 }
