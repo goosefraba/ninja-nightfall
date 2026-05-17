@@ -797,11 +797,13 @@ button {
   }
 
   .touch-action--attack {
+    order: 2;
     width: var(--touch-attack);
     height: var(--touch-attack);
   }
 
   .touch-action--ultimate {
+    order: 1;
     width: var(--touch-ultimate);
     height: var(--touch-ultimate);
     margin-bottom: clamp(24px, 4vw, 34px);

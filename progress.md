@@ -215,3 +215,8 @@ Original prompt: Build and iteratively fix a playable Three.js top-down pixel-ar
   - attack and ultimate buttons are fully visible
   - top-right HUD buttons are fully visible
   - `visualViewport.scale` remains `1`
+
+## Current Turn - iPad Attack Button Reachability
+
+- Reordered the tablet touch action buttons so `ATK` is the outer/rightmost low button for easier thumb reach.
+- Kept `ULT` inward and raised so it stays available but is less likely to be hit accidentally.
